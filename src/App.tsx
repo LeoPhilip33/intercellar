@@ -1,4 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import Counter from './counter'
 
 function App() {
   const account = useAccount()
@@ -38,6 +39,10 @@ function App() {
         ))}
         <div>{status}</div>
         <div>{error?.message}</div>
+      </div>
+
+      <div>
+        <Counter />
       </div>
     </>
   )
