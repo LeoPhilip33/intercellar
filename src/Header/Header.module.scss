@@ -1,0 +1,14 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.2rem white solid;
+  padding: 1rem;
+
+
+  button {
+    padding: 0.5rem 1.5rem;
+    border: 0;
+    border-radius: 0.2rem;
+  }
+}
