@@ -1,6 +1,6 @@
-import Counter from "./Counter/Counter";
-import Header from "./Header/Header";
-import { ConnectionProvider } from "./ConnectionProvider";
+import Counter from "./components/Counter";
+import Header from "./components/Header";
+import { ConnectionProvider } from "./utils/ConnectionProvider";
 
 function App() {
   return (

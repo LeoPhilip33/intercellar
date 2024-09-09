@@ -1,4 +1,4 @@
-import styles from "./Counter.module.scss";
+import styles from "../styles/Counter.module.scss";
 import { useEffect, useState } from "react";
 import {
   useAccount,

@@ -1,6 +1,6 @@
 import { useConnect } from "wagmi";
-import { useConnection } from "../ConnectionProvider";
-import styles from "./Header.module.scss";
+import { useConnection } from "../utils/ConnectionProvider";
+import styles from "../styles/Header.module.scss";
 
 const Header = () => {
   const { disconnect, address, isConnected } = useConnection();
