@@ -1,13 +1,18 @@
+import styles from "./Counter.module.scss";
 import { useEffect, useState } from "react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
-import { ABI_COUNTER, CONTRACT_ADDRESS } from "./contract";
-import { config } from "./wagmi";
+import { ABI_COUNTER, CONTRACT_ADDRESS } from "../contract";
+import { config } from "../wagmi";
+import addIcon from "../assets/icons/add.svg";
+import minusIcon from "../assets/icons/minus.svg";
+import resetIcon from "../assets/icons/minus.svg";
 
 const Counter = () => {
   const { isConnected } = useAccount();
   const [count, setCount] = useState(0);
   const [incrementValue, setIncrementValue] = useState(0);
   const [decrementValue, setDecrementValue] = useState(0);
+  const [customError, setError] = useState("");
 
   const { data: currentCount } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -15,11 +20,9 @@ const Counter = () => {
     functionName: "count",
   });
 
-  const { writeContractAsync, error } = useWriteContract({
+  const { writeContractAsync } = useWriteContract({
     config,
   });
-
-  console.log(error);
 
   async function incrementContract() {
     try {
@@ -28,20 +31,32 @@ const Counter = () => {
         abi: ABI_COUNTER,
         address: CONTRACT_ADDRESS,
       });
+      setError("");
     } catch (error) {
       console.error("Error during increment:", error);
+      setError("Error during increment");
     }
   }
 
   async function decrementContract() {
+    if (currentCount === undefined) return;
+    const decrementResult = Number(currentCount) - 1;
+
+    if (decrementResult < 0) {
+      setError("Counter cannot be negative");
+      return;
+    }
+
     try {
       await writeContractAsync({
         functionName: "decrement",
         abi: ABI_COUNTER,
         address: CONTRACT_ADDRESS,
       });
+      setError("");
     } catch (error) {
       console.error("Error during decrement:", error);
+      setError("Error during decrement");
     }
   }
 
@@ -52,8 +67,10 @@ const Counter = () => {
         abi: ABI_COUNTER,
         address: CONTRACT_ADDRESS,
       });
+      setError("");
     } catch (error) {
       console.error("Error during reset:", error);
+      setError("Error during reset");
     }
   }
 
@@ -66,8 +83,10 @@ const Counter = () => {
           address: CONTRACT_ADDRESS,
           args: [BigInt(incrementValue)],
         });
+        setError("");
       } catch (error) {
         console.error("Error during incrementBy:", error);
+        setError("Error during incrementBy");
       }
     }
   }
@@ -81,8 +100,10 @@ const Counter = () => {
           address: CONTRACT_ADDRESS,
           args: [BigInt(decrementValue)],
         });
+        setError("");
       } catch (error) {
         console.error("Error during decrementBy:", error);
+        setError("Error during decrementBy");
       }
     }
   }
@@ -111,29 +132,54 @@ const Counter = () => {
     <div>
       {isConnected ? (
         <>
-          <h2>Current Counter Value: {count}</h2>
-          <button onClick={incrementContract}>Increment</button>
-          <button onClick={decrementContract}>Decrement</button>
-          <button onClick={resetContract}>Reset</button>
+          <div className={styles.CounterContainer}>
+            <h3>Current Counter Value: {count}</h3>
+            {customError && <p style={{ color: "red" }}>{customError}</p>}
+            <div className={styles.InteractionContainer}>
+              <div className={styles.ActionContainer}>
+                <img
+                  onClick={incrementContract}
+                  src={addIcon}
+                  alt="Incrémenter"
+                />
+                <p>Increment</p>
+              </div>
+              <div className={styles.ActionContainer}>
+                <img
+                  onClick={decrementContract}
+                  src={minusIcon}
+                  alt="Décrementer"
+                />
+                <p>Decrement</p>
+              </div>
+              <div className={styles.ActionContainer}>
+                <img onClick={resetContract} src={resetIcon} alt="Reset" />
+                <p>Reset</p>
+              </div>
+              <div className={styles.ActionContainer}>
+                <input
+                  type="number"
+                  value={incrementValue}
+                  onChange={handleIncrementChange}
+                  placeholder="Enter increment value"
+                />
+                <button onClick={incrementByContract}>Increment By</button>
+              </div>
 
-          <input
-            type="number"
-            value={incrementValue}
-            onChange={handleIncrementChange}
-            placeholder="Enter increment value"
-          />
-          <button onClick={incrementByContract}>Increment By</button>
-
-          <input
-            type="number"
-            value={decrementValue}
-            onChange={handleDecrementChange}
-            placeholder="Enter decrement value"
-          />
-          <button onClick={decrementByContract}>Decrement By</button>
+              <div className={styles.ActionContainer}>
+                <input
+                  type="number"
+                  value={decrementValue}
+                  onChange={handleDecrementChange}
+                  placeholder="Enter decrement value"
+                />
+                <button onClick={decrementByContract}>Decrement By</button>
+              </div>
+            </div>
+          </div>
         </>
       ) : (
-        <p>Please connect your wallet</p>
+        <h3>Please connect your wallet</h3>
       )}
     </div>
   );

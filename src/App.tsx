@@ -1,4 +1,4 @@
-import Counter from "./Counter";
+import Counter from "./Counter/Counter";
 import Header from "./Header/Header";
 import { ConnectionProvider } from "./ConnectionProvider";
 
