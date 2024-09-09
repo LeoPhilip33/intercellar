@@ -1,14 +1,14 @@
-import { useConnect } from 'wagmi';
-import { useConnection } from '../ConnectionProvider';
-import styles from './Header.module.scss';
+import { useConnect } from "wagmi";
+import { useConnection } from "../ConnectionProvider";
+import styles from "./Header.module.scss";
 
 const Header = () => {
   const { disconnect, address, isConnected } = useConnection();
-  const { connectors, connect, error } = useConnect()
+  const { connectors, connect, error } = useConnect();
 
   return (
     <div className={styles.headerContainer}>
-      {address ? `Connected: ${address}` : 'Not connected'}
+      {address ? `Connected: ${address}` : "Not connected"}
 
       {isConnected && (
         <button type="button" onClick={disconnect}>
@@ -19,10 +19,7 @@ const Header = () => {
         <>
           {connectors.map((connector) => (
             <div key={connector.uid}>
-              <button
-                onClick={() => connect({ connector })}
-                type="button"
-              >
+              <button onClick={() => connect({ connector })} type="button">
                 {connector.name}
               </button>
             </div>

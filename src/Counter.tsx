@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
-import { ABI_COUNTER, CONTRACT_ADDRESS } from './contract';
-import { config } from './wagmi';
+import { useEffect, useState } from "react";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { ABI_COUNTER, CONTRACT_ADDRESS } from "./contract";
+import { config } from "./wagmi";
 
 const Counter = () => {
   const { isConnected } = useAccount();
@@ -12,7 +12,7 @@ const Counter = () => {
   const { data: currentCount } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI_COUNTER,
-    functionName: 'count',
+    functionName: "count",
   });
 
   const { writeContractAsync, error } = useWriteContract({
@@ -20,40 +20,40 @@ const Counter = () => {
   });
 
   console.log(error);
-  
+
   async function incrementContract() {
     try {
       await writeContractAsync({
-        functionName: 'increment',
+        functionName: "increment",
         abi: ABI_COUNTER,
-        address: CONTRACT_ADDRESS
+        address: CONTRACT_ADDRESS,
       });
     } catch (error) {
-      console.error('Error during increment:', error);
+      console.error("Error during increment:", error);
     }
   }
 
   async function decrementContract() {
     try {
       await writeContractAsync({
-        functionName: 'decrement',
+        functionName: "decrement",
         abi: ABI_COUNTER,
-        address: CONTRACT_ADDRESS
+        address: CONTRACT_ADDRESS,
       });
     } catch (error) {
-      console.error('Error during decrement:', error);
+      console.error("Error during decrement:", error);
     }
   }
 
   async function resetContract() {
     try {
       await writeContractAsync({
-        functionName: 'reset',
+        functionName: "reset",
         abi: ABI_COUNTER,
-        address: CONTRACT_ADDRESS
+        address: CONTRACT_ADDRESS,
       });
     } catch (error) {
-      console.error('Error during reset:', error);
+      console.error("Error during reset:", error);
     }
   }
 
@@ -61,13 +61,13 @@ const Counter = () => {
     if (incrementValue > 0) {
       try {
         await writeContractAsync({
-          functionName: 'incrementBy',
+          functionName: "incrementBy",
           abi: ABI_COUNTER,
           address: CONTRACT_ADDRESS,
           args: [BigInt(incrementValue)],
         });
       } catch (error) {
-        console.error('Error during incrementBy:', error);
+        console.error("Error during incrementBy:", error);
       }
     }
   }
@@ -76,13 +76,13 @@ const Counter = () => {
     if (decrementValue > 0) {
       try {
         await writeContractAsync({
-          functionName: 'decrementBy',
+          functionName: "decrementBy",
           abi: ABI_COUNTER,
           address: CONTRACT_ADDRESS,
           args: [BigInt(decrementValue)],
         });
       } catch (error) {
-        console.error('Error during decrementBy:', error);
+        console.error("Error during decrementBy:", error);
       }
     }
   }
