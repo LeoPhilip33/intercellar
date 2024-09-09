@@ -1,11 +1,16 @@
 import styles from "./Counter.module.scss";
 import { useEffect, useState } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { ABI_COUNTER, CONTRACT_ADDRESS } from "../contract";
 import { config } from "../wagmi";
 import addIcon from "../assets/icons/add.svg";
 import minusIcon from "../assets/icons/minus.svg";
-import resetIcon from "../assets/icons/minus.svg";
+import resetIcon from "../assets/icons/reset.svg";
 
 const Counter = () => {
   const { isConnected } = useAccount();
@@ -13,8 +18,10 @@ const Counter = () => {
   const [incrementValue, setIncrementValue] = useState(0);
   const [decrementValue, setDecrementValue] = useState(0);
   const [customError, setError] = useState("");
+  const [transactionHash, setTransactionHash] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: currentCount } = useReadContract({
+  const { data: currentCount, refetch } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI_COUNTER,
     functionName: "count",
@@ -24,17 +31,27 @@ const Counter = () => {
     config,
   });
 
+  const {
+    data: txReceipt,
+    isSuccess,
+    isError,
+  } = useWaitForTransactionReceipt({
+    hash: transactionHash as `0x${string}`,
+  });
+
   async function incrementContract() {
     try {
-      await writeContractAsync({
+      setIsLoading(true);
+      const txHash = await writeContractAsync({
         functionName: "increment",
         abi: ABI_COUNTER,
         address: CONTRACT_ADDRESS,
       });
+      setTransactionHash(txHash.startsWith("0x") ? txHash : `0x${txHash}`);
       setError("");
     } catch (error) {
-      console.error("Error during increment:", error);
       setError("Error during increment");
+      setIsLoading(false);
     }
   }
 
@@ -48,6 +65,7 @@ const Counter = () => {
     }
 
     try {
+      setIsLoading(true);
       await writeContractAsync({
         functionName: "decrement",
         abi: ABI_COUNTER,
@@ -55,13 +73,14 @@ const Counter = () => {
       });
       setError("");
     } catch (error) {
-      console.error("Error during decrement:", error);
+      setIsLoading(false);
       setError("Error during decrement");
     }
   }
 
   async function resetContract() {
     try {
+      setIsLoading(true);
       await writeContractAsync({
         functionName: "reset",
         abi: ABI_COUNTER,
@@ -69,7 +88,7 @@ const Counter = () => {
       });
       setError("");
     } catch (error) {
-      console.error("Error during reset:", error);
+      setIsLoading(false);
       setError("Error during reset");
     }
   }
@@ -77,6 +96,7 @@ const Counter = () => {
   async function incrementByContract() {
     if (incrementValue > 0) {
       try {
+        setIsLoading(true);
         await writeContractAsync({
           functionName: "incrementBy",
           abi: ABI_COUNTER,
@@ -85,7 +105,7 @@ const Counter = () => {
         });
         setError("");
       } catch (error) {
-        console.error("Error during incrementBy:", error);
+        setIsLoading(false);
         setError("Error during incrementBy");
       }
     }
@@ -94,6 +114,7 @@ const Counter = () => {
   async function decrementByContract() {
     if (decrementValue > 0) {
       try {
+        setIsLoading(true);
         await writeContractAsync({
           functionName: "decrementBy",
           abi: ABI_COUNTER,
@@ -102,7 +123,7 @@ const Counter = () => {
         });
         setError("");
       } catch (error) {
-        console.error("Error during decrementBy:", error);
+        setIsLoading(false);
         setError("Error during decrementBy");
       }
     }
@@ -113,6 +134,19 @@ const Counter = () => {
       setCount(Number(currentCount));
     }
   }, [currentCount]);
+
+  useEffect(() => {
+    if (transactionHash) {
+      if (isSuccess && txReceipt) {
+        refetch();
+        setTransactionHash("");
+        setIsLoading(false);
+      } else if (isError) {
+        setTransactionHash("");
+        setIsLoading(false);
+      }
+    }
+  }, [isSuccess, txReceipt, transactionHash, refetch]);
 
   const handleIncrementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -135,45 +169,58 @@ const Counter = () => {
           <div className={styles.CounterContainer}>
             <h3>Current Counter Value: {count}</h3>
             {customError && <p style={{ color: "red" }}>{customError}</p>}
+            {isLoading && <p>Loading...</p>}
             <div className={styles.InteractionContainer}>
-              <div className={styles.ActionContainer}>
-                <img
-                  onClick={incrementContract}
-                  src={addIcon}
-                  alt="Incrémenter"
-                />
+              <button
+                disabled={isLoading}
+                className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+                onClick={incrementContract}
+              >
+                <img src={addIcon} alt="Incrémenter" />
                 <p>Increment</p>
-              </div>
-              <div className={styles.ActionContainer}>
-                <img
-                  onClick={decrementContract}
-                  src={minusIcon}
-                  alt="Décrementer"
-                />
+              </button>
+              <button
+                disabled={isLoading}
+                className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+                onClick={decrementContract}
+              >
+                <img src={minusIcon} alt="Décrementer" />
                 <p>Decrement</p>
-              </div>
-              <div className={styles.ActionContainer}>
-                <img onClick={resetContract} src={resetIcon} alt="Reset" />
+              </button>
+              <button
+                disabled={isLoading}
+                className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+                onClick={resetContract}
+              >
+                <img src={resetIcon} alt="Reset" />
                 <p>Reset</p>
-              </div>
-              <div className={styles.ActionContainer}>
+              </button>
+
+              <div
+                className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              >
                 <input
                   type="number"
                   value={incrementValue}
                   onChange={handleIncrementChange}
                   placeholder="Enter increment value"
                 />
-                <button onClick={incrementByContract}>Increment By</button>
+                <button disabled={isLoading} onClick={incrementByContract}>
+                  Increment By
+                </button>
               </div>
-
-              <div className={styles.ActionContainer}>
+              <div
+                className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              >
                 <input
                   type="number"
                   value={decrementValue}
                   onChange={handleDecrementChange}
                   placeholder="Enter decrement value"
                 />
-                <button onClick={decrementByContract}>Decrement By</button>
+                <button disabled={isLoading} onClick={decrementByContract}>
+                  Decrement By
+                </button>
               </div>
             </div>
           </div>

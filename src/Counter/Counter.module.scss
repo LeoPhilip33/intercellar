@@ -9,6 +9,7 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
 
         .ActionContainer {
@@ -19,11 +20,25 @@
             padding: 1rem;
             border-radius: 0.2rem;
             height: fit-content;
+            transition: 0.2s;
+            color: white;
+
+            &.disabled {
+                cursor: not-allowed;
+                border: 0.1rem solid red;
+            }
+
+            &:hover {
+                transform: scale(1.03);
+                transition: 0.2s;
+                background-color: #d0d0d0;
+            }
 
             input {
                 text-align: center;
                 background-color: #af949400;
                 border: 0;
+                color: white;
             }
 
             button {
@@ -32,6 +47,8 @@
 
             p {
                 margin: 0;
+                margin-top: 0.5rem;
+                color: white;
             }
 
             img {
