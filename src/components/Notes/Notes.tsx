@@ -1,5 +1,6 @@
+import styles from "../../styles/Notes.module.scss";
 import { useState } from "react";
-import { useNotes } from "./NotesContext";
+import { useNotes } from "../../context/NotesContext";
 
 const Notes = () => {
   const { notes, addNote, toggleFavorite, removeNote } = useNotes();
@@ -13,8 +14,8 @@ const Notes = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className={styles.notesContainer}>
+      <div className={styles.inputContainer}>
         <input
           type="text"
           value={noteContent}
@@ -24,20 +25,28 @@ const Notes = () => {
         <button onClick={handleAddNote}>Add Note</button>
       </div>
 
-      <div>
-        <h2>Your Notes</h2>
+      <div className={styles.userNotesParentContainer}>
         {notes.length === 0 && <p>No notes yet</p>}
-        <ul>
-          {notes.map((note) => (
-            <li key={note.id} style={{ marginBottom: "1em" }}>
-              <p>{note.content}</p>
+        {notes.map((note) => (
+          <div
+            className={`${styles.userNotesContainer} ${note.isFavorite ? styles.favorite : styles.notFavorite}`}
+            key={note.id}
+          >
+            <p>{note.content}</p>
+
+            <div>
               <button onClick={() => toggleFavorite(note.id)}>
                 {note.isFavorite ? "Unfavorite" : "Favorite"}
               </button>
-              <button onClick={() => removeNote(note.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+              <button
+                className={styles.delete}
+                onClick={() => removeNote(note.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

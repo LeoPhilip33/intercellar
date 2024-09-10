@@ -1,0 +1,47 @@
+.notesContainer {
+    color: white;
+
+    .inputContainer {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+
+        input {
+            width: 80%;
+            border: 0;
+            border-radius: 0.2rem;
+            padding: 1rem;
+        }
+    }
+
+    .userNotesParentContainer {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+
+        .userNotesContainer {
+            padding: 1rem;
+            border-radius: 0.2rem;
+            width: fit-content;
+            background-color: #af9494;
+            color: white;
+
+            >div {
+                display: flex;
+                gap: 1rem;
+            }
+
+            &.favorite {
+                background-color: rgb(220 151 60);
+                color: black;
+            }
+
+            .delete {
+                background-color: #e31d1d;
+            }
+        }
+    }
+
+}

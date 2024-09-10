@@ -114,14 +114,14 @@ const Counter = () => {
   return (
     <div>
       {isConnected ? (
-        <div className={styles.CounterContainer}>
+        <div className={styles.counterContainer}>
           <h3>Current Counter Value: {count}</h3>
           {customError && <p style={{ color: "red" }}>{customError}</p>}
           {isLoading && <p>Loading...</p>}
-          <div className={styles.InteractionContainer}>
+          <div className={styles.interactionContainer}>
             <button
               disabled={isLoading}
-              className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              className={`${styles.actionContainer} ${isLoading ? styles.disabled : ""}`}
               onClick={incrementContract}
             >
               <img src={addIcon} alt="Incrémenter" />
@@ -129,7 +129,7 @@ const Counter = () => {
             </button>
             <button
               disabled={isLoading}
-              className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              className={`${styles.actionContainer} ${isLoading ? styles.disabled : ""}`}
               onClick={decrementContract}
             >
               <img src={minusIcon} alt="Décrementer" />
@@ -137,7 +137,7 @@ const Counter = () => {
             </button>
             <button
               disabled={isLoading}
-              className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              className={`${styles.actionContainer} ${isLoading ? styles.disabled : ""}`}
               onClick={resetContract}
             >
               <img src={resetIcon} alt="Reset" />
@@ -145,7 +145,7 @@ const Counter = () => {
             </button>
 
             <div
-              className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              className={`${styles.actionContainer} ${isLoading ? styles.disabled : ""}`}
             >
               <input
                 type="number"
@@ -158,7 +158,7 @@ const Counter = () => {
               </button>
             </div>
             <div
-              className={`${styles.ActionContainer} ${isLoading ? styles.disabled : ""}`}
+              className={`${styles.actionContainer} ${isLoading ? styles.disabled : ""}`}
             >
               <input
                 type="number"
